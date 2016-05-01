@@ -56,5 +56,11 @@ function update(env){
   env.now = future
 }
 
+process.on("SIGINT", () => {
+  process.stdout.write(CLEAR_SCREEN)
+  console.log(env.buffers[0].length, WIDTH, HEIGHT, WIDTH * HEIGHT)
+  process.exit(0)
+})
+
 randomizeBuffer(env.buffers[env.now])
 setInterval(update, ms, env)
