@@ -1,17 +1,22 @@
 'use strict';
 process.title = "Conway's Game of Life made by a cat"
 
-const CLEAR_SCREEN = "\x1B[2J"
+const CLEAR_SCREEN = "\x1B[1J"
 
 const ALIVE = 'O'.charCodeAt(0)
 const DEAD = ' '.charCodeAt(0)
 
 const WIDTH = process.stdout.columns
-const HEIGHT = process.stdout.rows
+const HEIGHT = process.stdout.rows - 1
 
-let ms = 250
+let ms = 16
 
 function randomizeBuffer(buffer){
+/*
+  buffer.fill(DEAD)
+  buffer.slice(WIDTH/2, WIDTH/2+2).fill(ALIVE)
+  return
+*/
   for(let i = 0; i < buffer.length; i++){
     buffer[i] = Math.round(Math.random()) === 0 ? ALIVE : DEAD
   }
@@ -42,8 +47,14 @@ function tick(now, future, width){
     alive += now[TOP_RIGHT] >= 0 && now[TOP_RIGHT] === ALIVE ? 1 : 0
     alive += now[BOTTOM_LEFT] < length && now[BOTTOM_LEFT] === ALIVE ? 1 : 0
     alive += now[BOTTOM_RIGHT] < length && now[BOTTOM_RIGHT] === ALIVE ? 1 : 0
-    future[i] = alive >= 2 && alive <= 3 ? ALIVE : DEAD
+    future[i] = (now[i] === DEAD && alive === 3) || (now[i] === ALIVE && alive >= 2 && alive <= 3) ? ALIVE : DEAD
+    //console.log(i, alive, future[i] === ALIVE ? true : false)
   }
+}
+
+function drawBuffer(buffer){
+  process.stdout.write(CLEAR_SCREEN)
+  process.stdout.write(buffer)
 }
 
 function update(env){
@@ -51,8 +62,7 @@ function update(env){
   let nowBuffer = env.buffers[env.now]
   let futureBuffer = env.buffers[future]
   tick(nowBuffer, futureBuffer, WIDTH)
-  process.stdout.write(CLEAR_SCREEN)
-  process.stdout.write(futureBuffer)
+  drawBuffer(nowBuffer)
   env.now = future
 }
 
