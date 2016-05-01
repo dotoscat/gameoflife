@@ -1,0 +1,17 @@
+{
+  "name": "gameoflife",
+  "version": "1.0.0",
+  "description": "Conway's Game of Life made by a cat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "toy",
+    "game",
+    "life",
+    "conway"
+  ],
+  "author": "Oscar TG",
+  "license": "MIT"
+}
