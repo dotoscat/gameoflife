@@ -1,7 +1,7 @@
 'use strict';
 process.title = "Conway's Game of Life made by a cat"
 
-const CLEAR_SCREEN = "\x1B[1J"
+const CLEAR_SCREEN = "\x1B[2J"
 
 const ALIVE = 'O'.charCodeAt(0)
 const DEAD = ' '.charCodeAt(0)
@@ -9,14 +9,11 @@ const DEAD = ' '.charCodeAt(0)
 const WIDTH = process.stdout.columns
 const HEIGHT = process.stdout.rows - 1
 
-let ms = 16
+const stdout = process.stdout
+
+let ms = 250
 
 function randomizeBuffer(buffer){
-/*
-  buffer.fill(DEAD)
-  buffer.slice(WIDTH/2, WIDTH/2+2).fill(ALIVE)
-  return
-*/
   for(let i = 0; i < buffer.length; i++){
     buffer[i] = Math.round(Math.random()) === 0 ? ALIVE : DEAD
   }
@@ -53,8 +50,8 @@ function tick(now, future, width){
 }
 
 function drawBuffer(buffer){
-  process.stdout.write(CLEAR_SCREEN)
-  process.stdout.write(buffer)
+  stdout.write(CLEAR_SCREEN)
+  stdout.write(buffer)
 }
 
 function update(env){
@@ -68,7 +65,6 @@ function update(env){
 
 process.on("SIGINT", () => {
   process.stdout.write(CLEAR_SCREEN)
-  console.log(env.buffers[0].length, WIDTH, HEIGHT, WIDTH * HEIGHT)
   process.exit(0)
 })
 
