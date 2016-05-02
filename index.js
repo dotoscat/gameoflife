@@ -1,3 +1,5 @@
+#!/usr/bin/env  node
+
 'use strict';
 process.title = "Conway's Game of Life made by a cat"
 
@@ -6,12 +8,19 @@ const CLEAR_SCREEN = "\x1B[2J"
 const ALIVE = 'O'.charCodeAt(0)
 const DEAD = ' '.charCodeAt(0)
 
-const WIDTH = process.stdout.columns
-const HEIGHT = process.stdout.rows - 1
-
 const stdout = process.stdout
 
 let ms = 250
+
+function getDimensions() {
+  let dimensions = {
+    width: process.stdout.columns,
+    height: process.stdout.rows - 1
+  }
+  return dimensions
+}
+
+let dimensions = getDimensions()
 
 function randomizeBuffer(buffer){
   for(let i = 0; i < buffer.length; i++){
@@ -19,10 +28,15 @@ function randomizeBuffer(buffer){
   }
 }
 
-let env = {
-  buffers: [new Buffer(WIDTH * HEIGHT), new Buffer(WIDTH * HEIGHT)] ,
-  now: 0
+function newEnvironment (width, height) {
+  let env = {
+    buffers: [new Buffer(width * height), new Buffer(width * height)] ,
+    now: 0
+  }
+  return env
 }
+
+let env = newEnvironment(dimensions.width, dimensions.height)
 
 function tick(now, future, width){
   let length = now.length
@@ -58,15 +72,24 @@ function update(env){
   let future = env.now === 0 ? 1 : 0
   let nowBuffer = env.buffers[env.now]
   let futureBuffer = env.buffers[future]
-  tick(nowBuffer, futureBuffer, WIDTH)
+  tick(nowBuffer, futureBuffer, dimensions.width)
   drawBuffer(nowBuffer)
   env.now = future
 }
 
-process.on("SIGINT", () => {
-  process.stdout.write(CLEAR_SCREEN)
-  process.exit(0)
+randomizeBuffer(env.buffers[env.now])
+let updateInterval = setInterval(update, ms, env)
+
+process.stdout.on("resize", () => {
+  clearInterval(updateInterval)
+  dimensions = getDimensions();
+  env = newEnvironment(dimensions.width, dimensions.height)
+  randomizeBuffer(env.buffers[env.now])
+  updateInterval = setInterval(update, ms, env)
 })
 
-randomizeBuffer(env.buffers[env.now])
-setInterval(update, ms, env)
+process.on("SIGINT", () => {
+  process.stdout.write(CLEAR_SCREEN)
+  console.log(dimensions)
+  process.exit(0)
+})

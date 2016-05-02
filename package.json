@@ -2,7 +2,8 @@
   "name": "gameoflife",
   "version": "1.0.0",
   "description": "Conway's Game of Life made by a cat",
-  "main": "index.js",
+  "bin": {"gameoflife": "./index.js"},
+  "preferGlobal": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,6 +13,10 @@
     "life",
     "conway"
   ],
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/npm/npm.git"
+  },
   "author": "Oscar Triano otrianodev",
   "license": "MIT"
 }
